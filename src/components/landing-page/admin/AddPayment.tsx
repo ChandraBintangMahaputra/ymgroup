@@ -1,17 +1,38 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Select from "react-select";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const AddPayment: React.FC = () => {
-  const [payerName, setPayerName] = useState<string>("");
+  const [payerOptions, setPayerOptions] = useState<{ value: string; label: string }[]>([]);
+  const [payer, setPayer] = useState<{ name: string; nim: string } | null>(null);
   const [amount, setAmount] = useState<number | undefined>(undefined);
   const [paymentDate, setPaymentDate] = useState<string>("");
   const [paymentEvidence, setPaymentEvidence] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [status, setStatus] = useState<string>("");
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchPayers = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_PREFIX_BACKEND}/api/fieldtrip/filter-student`);
+        const options = response.data.data.map((student: { nim: string; name: string }) => ({
+          value: student.nim,
+          label: student.name,
+        }));
+        setPayerOptions(options);
+      } catch (error) {
+        console.error("Error fetching payer data", error);
+      }
+    };
+    fetchPayers();
+  }, []);
+
+  const handlePayerChange = (selectedOption: any) => {
+    setPayer({ name: selectedOption.label, nim: selectedOption.value });
+  };
 
   const generateUniqueFileName = (originalName: string) => {
     const uniqueNumber = Math.floor(1000 + Math.random() * 9000);
@@ -27,10 +48,13 @@ const AddPayment: React.FC = () => {
     const adminName = userData.name || "Admin";
   
     const formData = new FormData();
-    formData.append("payer_name", payerName);
+    if (payer) {
+      formData.append("payer_name", payer.name);
+      formData.append("payer_nim", payer.nim); // Append the nim
+    }
     formData.append("amount", amount?.toString() || "");
     formData.append("payment_date", paymentDate);
-    formData.append("status", status || ""); // Handle empty status
+    formData.append("status", status || "");
     formData.append("created_by", adminName);
   
     if (paymentEvidence) {
@@ -54,11 +78,10 @@ const AddPayment: React.FC = () => {
       toast.success("Add Data Payment successful!");
       console.log("Payment added successfully", response.data);
       setTimeout(() => {
-        window.location.reload(); // Reload halaman setelah 1 detik
+        window.location.reload(); 
       }, 1000);
       
-      // Reset the form
-      setPayerName("");
+      setPayer(null);
       setAmount(undefined);
       setPaymentDate("");
       setPaymentEvidence(null);
@@ -68,7 +91,7 @@ const AddPayment: React.FC = () => {
       console.error("Error adding payment", error);
     }
   };
-  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     setPaymentEvidence(file);
@@ -84,31 +107,29 @@ const AddPayment: React.FC = () => {
   };
 
   useEffect(() => {
-    // Check if all fields are filled
     const isValid =
-      payerName.trim() !== "" &&
+      payer !== null &&
       amount !== undefined &&
       paymentDate.trim() !== "" &&
       status.trim() !== "" &&
       paymentEvidence !== null;
     setIsFormValid(isValid);
-  }, [payerName, amount, paymentDate, status, paymentEvidence]);
+  }, [payer, amount, paymentDate, status, paymentEvidence]);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
         <div className="space-y-2">
-          <label htmlFor="payerName" className="block font-medium">
+          <label htmlFor="payerName" className="block font-medium ">
             Payer Name
           </label>
-          <input
+          <Select
             id="payerName"
-            type="text"
-            value={payerName}
-            onChange={(e) => setPayerName(e.target.value)}
-            placeholder="Payer Name"
+            options={payerOptions}
+            onChange={handlePayerChange}
+            placeholder="Search Payer Name"
             className="p-2 border border-gray-300 rounded w-full"
-            required
+            isClearable
           />
         </div>
         <div className="space-y-2">

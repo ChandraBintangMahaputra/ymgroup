@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Select from "react-select";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -7,14 +8,20 @@ interface EditPaymentProps {
   paymentId: number;
 }
 
+interface StudentOption {
+  value: string; // nim
+  label: string; // name
+}
+
 const EditPayment: React.FC<EditPaymentProps> = ({ paymentId }) => {
-  const [payerName, setPayerName] = useState<string>("");
+  const [payerName, setPayerName] = useState<StudentOption | null>(null);
   const [amount, setAmount] = useState<number | undefined>(undefined);
   const [paymentDate, setPaymentDate] = useState<string>("");
   const [paymentEvidence, setPaymentEvidence] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [status, setStatus] = useState<string>("");
   const [originalPayment, setOriginalPayment] = useState<any | null>(null);
+  const [studentOptions, setStudentOptions] = useState<StudentOption[]>([]);
 
   const generateUniqueFileName = (originalName: string) => {
     const uniqueNumber = Math.floor(1000 + Math.random() * 9000);
@@ -26,7 +33,7 @@ const EditPayment: React.FC<EditPaymentProps> = ({ paymentId }) => {
   const formatDateForInput = (isoDate: string) => {
     const date = new Date(isoDate);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
@@ -40,13 +47,29 @@ const EditPayment: React.FC<EditPaymentProps> = ({ paymentId }) => {
       );
       const paymentData = response.data.data[0];
       setOriginalPayment(paymentData);
-      setPayerName(paymentData.payer_name);
+      setPayerName({ value: paymentData.nim, label: paymentData.payer_name });
       setAmount(paymentData.amount);
       setPaymentDate(formatDateForInput(paymentData.payment_date)); 
       setStatus(paymentData.status);
-      setImagePreview(`${import.meta.env.VITE_PHOTO_PREFIX}/${paymentData.payment_evidence}`); 
+      setImagePreview(`${import.meta.env.VITE_PHOTO_PREFIX}/${paymentData.payment_evidence}`);
     } catch (error) {
       console.error("Error fetching payment:", error);
+    }
+  };
+
+  const fetchStudentOptions = async (inputValue: string) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_PREFIX_BACKEND}/api/fieldtrip/filter-student?search=${inputValue}`
+      );
+      const students = response.data.data;
+      const options = students.map((student: { nim: string; name: string }) => ({
+        value: student.nim,
+        label: student.name,
+      }));
+      setStudentOptions(options);
+    } catch (error) {
+      console.error("Error fetching student options:", error);
     }
   };
 
@@ -54,7 +77,9 @@ const EditPayment: React.FC<EditPaymentProps> = ({ paymentId }) => {
     fetchPayment();
   }, [paymentId]);
 
-
+  const handleInputChange = (inputValue: string) => {
+    fetchStudentOptions(inputValue);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,8 +91,9 @@ const EditPayment: React.FC<EditPaymentProps> = ({ paymentId }) => {
     formData.append("paymentId", paymentId.toString());
 
     // Append only fields that have been changed
-    if (payerName !== originalPayment?.payer_name) {
-      formData.append("payer_name", payerName);
+    if (payerName?.label !== originalPayment?.payer_name) {
+      formData.append("payer_name", payerName?.label || "");
+      formData.append("payer_nim", payerName?.value || "");
     }
     if (amount !== originalPayment?.amount) {
       formData.append("amount", amount?.toString() || "");
@@ -102,12 +128,10 @@ const EditPayment: React.FC<EditPaymentProps> = ({ paymentId }) => {
       console.log("Payment Edited successfully", response.data);
 
       // Reset the form
-      
       fetchPayment();
       setTimeout(() => {
         window.location.reload(); // Reload halaman setelah 1 detik
       }, 1000);
-      
     } catch (error) {
       console.error("Error editing payment", error);
     }
@@ -127,7 +151,6 @@ const EditPayment: React.FC<EditPaymentProps> = ({ paymentId }) => {
     }
   };
 
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -135,13 +158,15 @@ const EditPayment: React.FC<EditPaymentProps> = ({ paymentId }) => {
           <label htmlFor="payerName" className="block font-medium">
             Payer Name
           </label>
-          <input
+          <Select
             id="payerName"
-            type="text"
             value={payerName}
-            onChange={(e) => setPayerName(e.target.value)}
-            placeholder="Payer Name"
-            className="p-2 border border-gray-300 rounded w-full"
+            onInputChange={handleInputChange}
+            onChange={(selectedOption) => setPayerName(selectedOption)}
+            options={studentOptions}
+            noOptionsMessage={() => "No student found"}
+            placeholder="Search for a student..."
+            className="w-full"
           />
         </div>
         <div className="space-y-2">
@@ -212,11 +237,11 @@ const EditPayment: React.FC<EditPaymentProps> = ({ paymentId }) => {
       </div>
       <button
         type="submit"
-        className={`p-2 bg-blue-500 text-white rounded hover:bg-blue-600`}
+        className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
       >
-        Save Changes
+        Save
       </button>
-      <ToastContainer autoClose={3000} position="top-right" closeOnClick />
+      <ToastContainer />
     </form>
   );
 };

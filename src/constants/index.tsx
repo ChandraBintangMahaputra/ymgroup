@@ -23,5 +23,10 @@ export const navigation = [
       id: "6",
       title: "Tentang Kami",
       url: "https://sv.ipb.ac.id/teknologi-rekayasa-perangkat-lunak/",
+    },
+    {
+      id: "7",
+      title: "Progress",
+      url: "/progress",
     }
   ];

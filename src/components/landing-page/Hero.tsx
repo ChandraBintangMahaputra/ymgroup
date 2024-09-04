@@ -3,10 +3,11 @@ import { useRef } from "react";
 import YouTubeEmbed from "../ui/YoutubeEmbed";
 import { BackgroundCircles, Gradient } from "../ui/HeroStyle";
 import { herobackground } from "../../assets";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   const parallaxRef = useRef(null);
-  
+
   return (
     <Section className="pt-8 lg:pt-32 xl:pt-40" id="hero">
       <div className="container relative" ref={parallaxRef}>
@@ -21,16 +22,26 @@ const Hero = () => {
           />
         </div>
 
-        <div className="relative z-10 max-w-[62rem] mx-auto text-center mb-[3.875rem] md:mb-20 lg:mb-[6.25rem]">
+        <div className="relative z-10 max-w-[62rem] mx-auto text-center mb-[1.875rem] md:mb-10 lg:mb-[2.25rem]">
           <h1 className="h1 mb-6">
             Let's Start Our Journey{" "}
-            <span className="inline-block relative">
-              Together{" "}
-            </span>
+            <span className="inline-block relative">Together{" "}</span>
           </h1>
           <p className="body-1 max-w-3xl mx-auto mb-6 text-n-7 lg:mb-8">
             Fun Fieldtrip With TPL 58
           </p>
+        
+        </div>
+         {/* New div for the button outside the previous div */}
+         <div className="relative z-20 w-full mx-auto text-center mb-12 md:mb-25 lg:mb-[9.25rem]">
+          <Link to={"/progress"}>
+            <button className="relative p-[3px]">
+              <div className="absolute inset-0 bg-[#0d629b] rounded-lg" />
+              <div className="px-8 py-2 flex items-center gap-x-2 bg-white rounded-[6px] relative group transition duration-200 font-semibold text-[#0e3b5d] hover:text-white hover:bg-transparent">
+                Lihat Progress
+              </div>
+            </button>
+          </Link>
         </div>
 
         <div className="relative max-w-[23rem] mx-auto md:max-w-5xl xl:mb-24 z-10">

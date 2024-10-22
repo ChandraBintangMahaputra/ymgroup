@@ -72,9 +72,9 @@ const Header = () => {
         <nav
           className={`${
             openNavigation ? "flex" : "hidden"
-          } fixed top-0 left-0 right-0 bottom-0 bg-white lg:static lg:flex lg:mx-auto lg:bg-transparent lg:flex lg:justify-center lg:items-center lg:w-full lg:items-center`}
+          } fixed top-0 left-0 bottom-0 bg-white lg:static lg:flex lg:mx-auto lg:bg-transparent lg:flex lg:justify-start lg:w-full lg:items-start`}
         >
-          <div className="relative z-2 flex flex-col items-center justify-center m-auto lg:flex-row">
+          <div className="relative z-2 flex flex-col items-start left-0 justify-start m-auto lg:flex-row">
             <div
               className={`${
                 openNavigation ? "flex" : "hidden"
@@ -99,11 +99,11 @@ const Header = () => {
                   to={item.title === "About" ? item.url : `${item.url}`}
                   target={item.url.startsWith("https://") ? "_blank" : "_self"}
                   onClick={handleClick}
-                  className={`block relative font-code text-2xl uppercase transition-colors lg:flex lg:justify-center lg:items-center ${
+                  className={`block relative font-code text-2xl uppercase transition-colors lg:flex lg:justify-start lg:items-start ${
                     openNavigation
                       ? isActive
-                        ? "text-black font-bold" // Menu aktif saat dibuka
-                        : "text-black/50 hover:text-purple-500" // Menu lainnya saat dibuka
+                        ? "text-black font-bold"
+                        : "text-black/50 hover:text-purple-500"
                       : isScrolled
                       ? isActive
                         ? "text-black font-bold"
@@ -138,7 +138,12 @@ const Header = () => {
           px="px-3"
           onClick={toggleNavigation}
         >
-           <MenuSvg openNavigation={openNavigation} fillColor={openNavigation ? "black" : isScrolled ? "black" : "white"} />
+          <MenuSvg
+            openNavigation={openNavigation}
+            fillColor={
+              openNavigation ? "black" : isScrolled ? "black" : "white"
+            }
+          />
         </Button>
       </div>
     </div>

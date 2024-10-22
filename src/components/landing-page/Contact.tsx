@@ -14,14 +14,6 @@ export const Contact = () => {
               <FirstContactDetail>0895394753906</FirstContactDetail>
             </div>
           </div>
-
-          <div className="flex flex-col items-center justify-center">
-            <h5 className="h5 text-gray-900 mb-3 font-bold">Muhammad Renaldi</h5>
-
-            <div className="mt-3 flex flex-col justify-center items-center gap-4">
-              <FirstContactDetail>089669986114</FirstContactDetail>
-            </div>
-          </div>
         </div>
       </div>
     </Section>

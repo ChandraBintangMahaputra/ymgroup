@@ -11,6 +11,10 @@ import education from "./education.png"
 import kepemimpinan from "./kepemimpinan.png"
 import achieve from "./achieve.png"
 import email1bg from "./email1bg.png"
+import purposeimage1 from "./purposeimage1.png"
+import purposeimage2 from "./purposeimage2.png"
+import purposeimage3 from "./purposeimage3.png"
+import purposeimage4 from "./purposeimage4.png"
 
 export{
     background,
@@ -18,6 +22,10 @@ export{
     herobackground,
     bgheader,
     purposeImage,
+    purposeimage1,
+    purposeimage2,
+    purposeimage3,
+    purposeimage4,
     bromo,
     office,
     scale,

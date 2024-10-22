@@ -6,13 +6,8 @@ export const navigation = [
     },
     {
       id: "2",
-      title: "Tujuan",
-      url: "/#tujuan",
-    },
-    {
-      id: "3",
-      title: "Agenda",
-      url: "/#agenda",
+      title: "Program",
+      url: "/#program",
     },
     {
       id: "5",
@@ -21,12 +16,17 @@ export const navigation = [
     },
     {
       id: "6",
-      title: "Tentang Kami",
-      url: "https://sv.ipb.ac.id/teknologi-rekayasa-perangkat-lunak/",
+      title: "Artikel",
+      url: "/#footer"
     },
     {
       id: "7",
-      title: "Progress",
-      url: "/progress",
+      title: "Daftar",
+      url: "/register"
+    },
+    {
+      id: "8",
+      title: "Masuk",
+      url: "/login"
     }
   ];

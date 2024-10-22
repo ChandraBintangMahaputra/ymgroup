@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { disablePageScroll, enablePageScroll } from "scroll-lock";
-import { tpl } from "../../assets";
+import { scale, scaleWhite } from "../../assets"; // Updated to include both logos
 import { navigation } from "../../constants";
 import Button from "../ui/Button";
 import MenuSvg from "../../assets/svg/MenuSvg";
@@ -10,6 +10,7 @@ import { useState, useEffect, useRef } from "react";
 const Header = () => {
   const location = useLocation();
   const [openNavigation, setOpenNavigation] = useState<boolean>(false);
+  const [isScrolled, setIsScrolled] = useState<boolean>(false); // Track scroll state
   const prevHash = useRef<string>("");
 
   useEffect(() => {
@@ -24,6 +25,19 @@ const Header = () => {
     }
   }, [location.pathname, location.hash]);
 
+  // Handle scrolling to change navbar background and logo
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const toggleNavigation = () => {
     if (openNavigation) {
       setOpenNavigation(false);
@@ -36,7 +50,6 @@ const Header = () => {
 
   const handleClick = () => {
     if (!openNavigation) return;
-
     enablePageScroll();
     setOpenNavigation(false);
   };
@@ -45,12 +58,17 @@ const Header = () => {
 
   return (
     <div
-      className={`fixed top-0 left-0 w-full z-50 lg:bg-white/90 lg:backdrop-blur-sm ${
-        openNavigation ? "bg-white" : "bg-white"
-      } mb-20 sm:mb-12 md:mb-16`}
-      style={{ marginBottom: '2rem' }}
+      className={`fixed top-0 left-0 w-full z-50 transition-colors duration-300 ${
+        openNavigation
+          ? "bg-white text-black" // Saat menu dibuka
+          : isScrolled
+          ? "bg-white/90 text-black" // Saat user scroll
+          : "bg-transparent text-white" // Default transparan saat belum dibuka dan tidak discroll
+      } ${
+        !isScrolled && !openNavigation ? "lg:bg-transparent bg-transparent" : ""
+      }`}
     >
-      <div className="flex flex-col lg:flex-row justify-between items-center px-5 lg:px-7.5 xl:px-10 max-lg:py-4">
+      <div className="flex flex-col lg:flex-row justify-between items-center px-5 lg:px-7.5 xl:px-10">
         <nav
           className={`${
             openNavigation ? "flex" : "hidden"
@@ -61,22 +79,39 @@ const Header = () => {
               className={`${
                 openNavigation ? "flex" : "hidden"
               } lg:hidden flex flex-col items-center justify-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-9999`}
-              style={{ top: '-4rem' }}
               onClick={() => navigate(`/`)}
             >
-              <img src={tpl} width={100} height={20} className="p-5" alt="otsuka" />
+              <img
+                src={isScrolled ? scale : scaleWhite}
+                width={150}
+                height={40}
+                className="p-5"
+                alt="tpl"
+              />
             </div>
             {navigation.map((item) => {
-              const isActive = location.pathname === item.url || location.hash === `#${item.id}`;
+              const isActive =
+                location.pathname === item.url ||
+                location.hash === `#${item.id}`;
               return (
                 <Link
                   key={item.id}
                   to={item.title === "About" ? item.url : `${item.url}`}
                   target={item.url.startsWith("https://") ? "_blank" : "_self"}
                   onClick={handleClick}
-                  className={`block relative font-code text-2xl uppercase text-black transition-colors hover:text-color-1 lg:flex lg:justify-center lg:items-center ${
-                    isActive ? "text-color-1 font-bold" : "text-black/50"
-                  } px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-sm lg:font-semibold lg:leading-5 lg:hover:text-black`}
+                  className={`block relative font-code text-2xl uppercase transition-colors lg:flex lg:justify-center lg:items-center ${
+                    openNavigation
+                      ? isActive
+                        ? "text-black font-bold" // Menu aktif saat dibuka
+                        : "text-black/50 hover:text-purple-500" // Menu lainnya saat dibuka
+                      : isScrolled
+                      ? isActive
+                        ? "text-black font-bold"
+                        : "text-black/50 hover:text-purple-500"
+                      : isActive
+                      ? "text-white font-bold"
+                      : "text-white/70 hover:text-white"
+                  } px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-sm lg:font-semibold lg:leading-5`}
                 >
                   {item.title}
                 </Link>
@@ -84,14 +119,13 @@ const Header = () => {
             })}
           </div>
 
-          {/* Moved logo to the right for larger screens */}
           <div className="hidden lg:flex lg:order-last lg:pr-10 lg:items-center">
             <img
-              src={tpl}
-              width={100}
-              height={20}
+              src={isScrolled ? scale : scaleWhite} // Change logo on scroll
+              width={150}
+              height={40}
               alt="otsuka"
-              className="cursor-pointer p-5"
+              className="cursor-pointer"
               onClick={() => navigate(`/`)}
             />
           </div>
@@ -104,7 +138,7 @@ const Header = () => {
           px="px-3"
           onClick={toggleNavigation}
         >
-          <MenuSvg openNavigation={openNavigation} />
+           <MenuSvg openNavigation={openNavigation} fillColor={openNavigation ? "black" : isScrolled ? "black" : "white"} />
         </Button>
       </div>
     </div>

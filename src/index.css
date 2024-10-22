@@ -2,6 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 
 
@@ -29,6 +30,7 @@
 
 :root {
   --font-sora: "Sora", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
   --font-code: "Source Code Pro", monospace;
   --font-grotesk: "Space Grotesk", sans-serif;
   /* color-scheme: dark; */
@@ -286,4 +288,30 @@ input[type=number] {
 }
 .embla__slide:not(.is-snapped) {
   opacity: 0.16;
+}
+
+/* Pastikan sidebar dan header tetap di tempat */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* Z-index yang cukup tinggi agar di atas konten lainnya */
+}
+
+.sidebar {
+  position: fixed;
+  top: 60px; /* Set sesuai dengan tinggi header */
+  left: 0;
+  width: 250px; /* Sesuaikan lebar sidebar */
+  height: calc(100vh - 60px); /* Mengambil seluruh tinggi viewport dikurangi tinggi header */
+  overflow-y: auto; /* Tambahkan scroll pada sidebar jika kontennya panjang */
+  z-index: 999; /* Z-index yang cukup tinggi untuk di atas konten */
+}
+
+.main-content {
+  margin-left: 250px; /* Sesuaikan dengan lebar sidebar */
+  padding-top: 60px; /* Sesuaikan dengan tinggi header */
+  padding: 1rem; /* Spasi internal untuk konten */
+  overflow-x: auto; /* Menangani scroll horizontal pada konten */
 }

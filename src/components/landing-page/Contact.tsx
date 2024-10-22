@@ -5,7 +5,7 @@ export const Contact = () => {
   return (
     <Section id="contact" crosses>
       <div className="container lg:px-6 xl:px-8 relative">
-        <Heading tag="Hubungi Kami" title="Contact" />
+        <Heading title="Contact" />
 
         <div className="flex flex-col lg:flex-row justify-center lg:justify-around items-center gap-y-12 lg:gap-0">
           <div className="flex flex-col items-center justify-center">
@@ -20,14 +20,6 @@ export const Contact = () => {
 
             <div className="mt-3 flex flex-col justify-center items-center gap-4">
               <FirstContactDetail>089669986114</FirstContactDetail>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center justify-center">
-            <h5 className="h5 text-gray-900 mb-3 font-bold">Jidan Fatahillah</h5>
-
-            <div className="mt-3 flex flex-col justify-center items-center gap-4">
-              <FirstContactDetail>081297194002</FirstContactDetail>
             </div>
           </div>
         </div>
